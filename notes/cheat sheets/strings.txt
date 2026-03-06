@@ -1,0 +1,210 @@
+PYTHON STRING CHEAT SHEET
+=========================
+
+CREAR STRINGS
+-------------
+s = "hola"
+s = 'hola'
+s = """texto largo"""
+
+Concatenar
+----------
+a = "hola"
+b = "mundo"
+c = a + " " + b
+
+Repetir
+-------
+"ha" * 3
+resultado: "hahaha"
+
+
+ACCESO A CARACTERES
+-------------------
+s = "python"
+
+s[0] -> p
+s[1] -> y
+s[-1] -> n
+s[-2] -> o
+
+
+SLICING
+-------
+s = "python"
+
+s[0:3] -> pyt
+s[2:5] -> tho
+s[:4] -> pyth
+s[3:] -> hon
+s[::2] -> pto
+s[::-1] -> nohtyp
+
+
+LONGITUD
+--------
+len(s)
+
+
+BUSCAR TEXTO
+------------
+
+s.find("py")
+devuelve posición o -1
+
+s.index("py")
+devuelve posición o error
+
+s.count("o")
+cuenta ocurrencias
+
+
+VERIFICACIONES
+--------------
+
+s.startswith("py")
+s.endswith("on")
+
+s.isalpha()     solo letras
+s.isdigit()     solo números
+s.isalnum()     letras y números
+s.isspace()     espacios
+s.islower()
+s.isupper()
+
+
+CAMBIAR MAYUSCULAS
+------------------
+
+s.upper()
+s.lower()
+s.capitalize()
+s.title()
+s.swapcase()
+
+
+ELIMINAR ESPACIOS
+-----------------
+
+s.strip()
+s.lstrip()
+s.rstrip()
+
+
+REEMPLAZAR TEXTO
+----------------
+
+s.replace("hola", "hello")
+
+
+DIVIDIR STRINGS
+---------------
+
+s = "uno,dos,tres"
+
+s.split(",")
+resultado: ['uno','dos','tres']
+
+
+UNIR STRINGS
+------------
+
+lista = ["uno","dos","tres"]
+
+",".join(lista)
+resultado: "uno,dos,tres"
+
+
+FORMATEO DE STRINGS
+-------------------
+
+1. F-STRINGS
+
+nombre = "Ana"
+edad = 20
+
+f"Hola {nombre}"
+f"{edad + 1}"
+
+2. FORMAT
+
+"Hola {}".format(nombre)
+
+3. ANTIGUO %
+
+"Hola %s" % nombre
+
+
+FORMATEO AVANZADO
+-----------------
+
+Alineación
+
+f"{texto:<10}"   izquierda
+f"{texto:>10}"   derecha
+f"{texto:^10}"   centrado
+
+
+Relleno
+
+f"{texto:-^20}"
+
+
+Números
+
+f"{numero:.2f}"   2 decimales
+f"{numero:,}"     separador miles
+f"{numero:08}"    rellenar con ceros
+
+
+TRABAJAR CON EXTENSIONES
+------------------------
+
+archivo = "documento.txt"
+
+archivo.endswith(".txt")
+
+nombre, ext = archivo.rsplit(".",1)
+
+
+CONVERSIONES
+------------
+
+str(10)
+int("10")
+float("3.14")
+
+
+COMPROBAR CONTENIDO
+-------------------
+
+if "py" in s:
+    print("encontrado")
+
+
+RECORRER STRING
+---------------
+
+for c in s:
+    print(c)
+
+
+ENUMERAR
+--------
+
+for i,c in enumerate(s):
+    print(i,c)
+
+
+INVERTIR STRING
+---------------
+
+s[::-1]
+
+
+FORMATEO UTIL PARA MENUS
+------------------------
+
+print(f"{titulo:-^60}")
+print(f"{texto:^40}")
+print(f"{numero:>10}")

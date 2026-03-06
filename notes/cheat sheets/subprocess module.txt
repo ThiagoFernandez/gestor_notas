@@ -1,0 +1,206 @@
+# PYTHON SUBPROCESS CHEAT SHEET
+
+El módulo subprocess permite ejecutar programas del sistema operativo
+desde Python y capturar su salida.
+
+## IMPORTAR MODULO
+
+import subprocess
+
+## FUNCION PRINCIPAL
+
+subprocess.run()
+
+## EJECUTAR COMANDO SIMPLE
+
+subprocess.run(["ls"])
+
+En Windows:
+
+subprocess.run(["dir"], shell=True)
+
+## EJECUTAR COMANDO CON ARGUMENTOS
+
+subprocess.run(["ls", "-l"])
+
+subprocess.run(["python", "script.py"])
+
+## CAPTURAR SALIDA DEL COMANDO
+
+resultado = subprocess.run(
+["ls"],
+capture_output=True,
+text=True
+)
+
+print(resultado.stdout)
+
+## CAPTURAR ERRORES
+
+resultado = subprocess.run(
+["ls", "archivo_inexistente"],
+capture_output=True,
+text=True
+)
+
+print(resultado.stderr)
+
+## SALIDA Y ERROR JUNTOS
+
+resultado = subprocess.run(
+["ls"],
+stdout=subprocess.PIPE,
+stderr=subprocess.PIPE,
+text=True
+)
+
+## DEVOLVER CODIGO DE SALIDA
+
+resultado = subprocess.run(["ls"])
+
+print(resultado.returncode)
+
+0 = éxito
+distinto de 0 = error
+
+## DETENER PROGRAMA SI FALLA
+
+subprocess.run(["ls"], check=True)
+
+Si el comando falla:
+
+subprocess.CalledProcessError
+
+## EJECUTAR COMANDO EN SHELL
+
+subprocess.run("ls -l", shell=True)
+
+## EJECUTAR PROGRAMA Y CONTINUAR
+
+subprocess.Popen(["firefox"])
+
+EJEMPLO
+
+proceso = subprocess.Popen(["sleep", "5"])
+
+print("El programa sigue ejecutándose")
+
+## ESPERAR A QUE TERMINE
+
+proceso = subprocess.Popen(["sleep", "5"])
+
+proceso.wait()
+
+## LEER SALIDA DE POPEN
+
+proceso = subprocess.Popen(
+["ls"],
+stdout=subprocess.PIPE,
+text=True
+)
+
+salida = proceso.stdout.read()
+
+print(salida)
+
+## EJECUTAR COMANDO Y GUARDAR SALIDA
+
+resultado = subprocess.run(
+["ls"],
+capture_output=True,
+text=True
+)
+
+salida = resultado.stdout
+
+## EJEMPLO PRACTICO
+
+abrir archivo en linux
+
+subprocess.Popen(["xdg-open", "archivo.pdf"])
+
+abrir navegador
+
+subprocess.Popen(["firefox"])
+
+abrir editor
+
+subprocess.Popen(["kwrite", "archivo.txt"])
+
+## EJEMPLO SCRIPT
+
+import subprocess
+
+comando = ["ping", "-c", "3", "google.com"]
+
+resultado = subprocess.run(
+comando,
+capture_output=True,
+text=True
+)
+
+print(resultado.stdout)
+
+## EJEMPLO VERIFICAR SI PROGRAMA EXISTE
+
+import shutil
+
+if shutil.which("python"):
+print("Python instalado")
+
+## FUNCIONES IMPORTANTES
+
+subprocess.run()
+subprocess.Popen()
+subprocess.PIPE
+subprocess.CalledProcessError
+
+## PARAMETROS MAS USADOS
+
+shell=True
+capture_output=True
+text=True
+stdout=subprocess.PIPE
+stderr=subprocess.PIPE
+check=True
+
+## COMPORTAMIENTO GENERAL
+
+run()     -> ejecuta y espera resultado
+Popen()   -> ejecuta y sigue el programa
+PIPE      -> permite capturar salida
+
+## ERRORES COMUNES
+
+No separar argumentos:
+
+mal:
+subprocess.run(["ls -l"])
+
+bien:
+subprocess.run(["ls","-l"])
+
+Usar shell innecesariamente:
+
+subprocess.run(["ls","-l"])
+
+NO
+
+subprocess.run("ls -l", shell=True)
+
+## EJEMPLO COMPLETO
+
+import subprocess
+
+resultado = subprocess.run(
+["ls","-l"],
+capture_output=True,
+text=True
+)
+
+if resultado.returncode == 0:
+print("Comando ejecutado correctamente")
+print(resultado.stdout)
+else:
+print("Error")
+print(resultado.stderr)

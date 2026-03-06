@@ -1,0 +1,8 @@
+busqueda por tag
+    los tags guardarlos en un txt porque es mejor q json
+
+busqueda por contenidos
+    recorrer todos los archivos de cierta cateoria o todos los archivos de todas las cateorias
+
+previsualizar contenidos
+    las primeras 5 lineas me parece bien

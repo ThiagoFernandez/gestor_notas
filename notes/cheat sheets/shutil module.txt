@@ -1,0 +1,187 @@
+PYTHON SHUTIL CHEAT SHEET
+=========================
+
+IMPORTAR MODULO
+---------------
+
+import shutil
+
+
+COPIAR ARCHIVOS
+---------------
+
+Copiar archivo
+
+shutil.copy("origen.txt", "destino.txt")
+
+
+Copiar archivo a carpeta
+
+shutil.copy("archivo.txt", "backup/")
+
+
+Copiar con metadata
+
+shutil.copy2("archivo.txt", "backup/")
+
+
+COPIAR DIRECTORIOS
+------------------
+
+Copiar carpeta completa
+
+shutil.copytree("carpeta", "backup/carpeta")
+
+
+ELIMINAR DIRECTORIOS
+--------------------
+
+Eliminar carpeta con contenido
+
+shutil.rmtree("carpeta")
+
+
+MOVER ARCHIVOS
+--------------
+
+Mover archivo
+
+shutil.move("archivo.txt", "backup/")
+
+
+Mover y renombrar
+
+shutil.move("archivo.txt", "backup/nuevo.txt")
+
+
+Mover directorio
+
+shutil.move("carpeta", "backup/")
+
+
+OBTENER INFORMACION
+-------------------
+
+Uso total del disco
+
+shutil.disk_usage("/")
+
+
+resultado:
+
+(total, used, free)
+
+
+Ejemplo
+
+total, used, free = shutil.disk_usage("/")
+
+print(total)
+print(used)
+print(free)
+
+
+BUSCAR EJECUTABLES
+------------------
+
+shutil.which("python")
+
+devuelve ruta del ejecutable
+
+
+ARCHIVOS TEMPORALES
+-------------------
+
+Crear copia temporal
+
+shutil.copy("archivo.txt", "/tmp/")
+
+
+COMPRIMIR ARCHIVOS
+------------------
+
+Crear ZIP
+
+shutil.make_archive("backup", "zip", "carpeta")
+
+
+Tipos posibles
+
+zip
+tar
+gztar
+bztar
+xztar
+
+
+DESCOMPRIMIR ARCHIVOS
+---------------------
+
+shutil.unpack_archive("backup.zip", "destino")
+
+
+ARCHIVOS ESPECIALES
+-------------------
+
+Copiar archivo especial
+
+shutil.copyfile("origen", "destino")
+
+
+Copiar permisos
+
+shutil.copymode("origen", "destino")
+
+
+Copiar metadata
+
+shutil.copystat("origen", "destino")
+
+
+FUNCIONES MAS USADAS
+--------------------
+
+shutil.copy()
+shutil.copy2()
+shutil.move()
+shutil.rmtree()
+shutil.copytree()
+shutil.make_archive()
+shutil.unpack_archive()
+shutil.which()
+
+
+EJEMPLO PRACTICO
+----------------
+
+backup automatico
+
+import shutil
+
+shutil.copytree("proyecto", "backup_proyecto")
+
+
+EJEMPLO MOVER ARCHIVOS
+----------------------
+
+import shutil
+import os
+
+for archivo in os.listdir():
+
+    if archivo.endswith(".txt"):
+        shutil.move(archivo, "textos/")
+
+
+EJEMPLO LIMPIAR CARPETA
+-----------------------
+
+import shutil
+import os
+
+for archivo in os.listdir("temp"):
+
+    ruta = os.path.join("temp", archivo)
+
+    if os.path.isfile(ruta):
+        os.remove(ruta)

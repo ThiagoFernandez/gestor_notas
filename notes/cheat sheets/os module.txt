@@ -1,0 +1,189 @@
+# PYTHON - CHEAT SHEET MODULO OS
+
+## IMPORTAR MODULO
+
+import os
+
+1. DIRECTORIO ACTUAL
+
+---
+
+Obtener directorio actual
+os.getcwd()
+
+Cambiar directorio
+os.chdir("carpeta")
+
+2. LISTAR ARCHIVOS
+
+---
+
+Listar contenido del directorio actual
+os.listdir()
+
+Listar contenido de una carpeta específica
+os.listdir("carpeta")
+
+Ejemplo:
+for archivo in os.listdir():
+print(archivo)
+
+3. CREAR DIRECTORIOS
+
+---
+
+Crear carpeta
+os.mkdir("carpeta")
+
+Crear carpetas anidadas
+os.makedirs("carpeta/subcarpeta")
+
+4. ELIMINAR ARCHIVOS Y CARPETAS
+
+---
+
+Eliminar archivo
+os.remove("archivo.txt")
+
+Eliminar carpeta vacía
+os.rmdir("carpeta")
+
+Eliminar carpeta con contenido
+import shutil
+shutil.rmtree("carpeta")
+
+5. RENOMBRAR ARCHIVOS
+
+---
+
+os.rename("viejo.txt", "nuevo.txt")
+
+6. VERIFICAR EXISTENCIA
+
+---
+
+Verificar si existe archivo o carpeta
+os.path.exists("archivo.txt")
+
+Verificar si es archivo
+os.path.isfile("archivo.txt")
+
+Verificar si es carpeta
+os.path.isdir("carpeta")
+
+7. INFORMACION DE ARCHIVOS
+
+---
+
+Obtener tamaño del archivo
+os.path.getsize("archivo.txt")
+
+Fecha de última modificación
+os.path.getmtime("archivo.txt")
+
+8. MANEJO DE RUTAS
+
+---
+
+Unir rutas de forma segura
+os.path.join("carpeta", "archivo.txt")
+
+Obtener nombre del archivo
+os.path.basename("/home/user/archivo.txt")
+
+Obtener directorio del archivo
+os.path.dirname("/home/user/archivo.txt")
+
+Separar nombre y extensión
+nombre, extension = os.path.splitext("archivo.txt")
+
+9. VARIABLES DE ENTORNO
+
+---
+
+Ver todas las variables de entorno
+os.environ
+
+Obtener variable de entorno
+os.environ.get("HOME")
+
+Crear variable de entorno
+os.environ["MI_VARIABLE"] = "valor"
+
+10. INFORMACION DEL SISTEMA
+
+---
+
+Sistema operativo
+os.name
+
+Valores posibles:
+nt     -> Windows
+posix  -> Linux / Mac
+
+11. RECORRER DIRECTORIOS
+
+---
+
+for root, dirs, files in os.walk("carpeta"):
+print(root)
+print(dirs)
+print(files)
+
+12. EJECUTAR COMANDOS DEL SISTEMA
+
+---
+
+Metodo simple
+os.system("ls")
+
+Metodo recomendado
+import subprocess
+subprocess.run(["ls"])
+
+13. PERMISOS DE ARCHIVOS
+
+---
+
+Cambiar permisos
+os.chmod("archivo.txt", 0o755)
+
+14. FUNCIONES MAS USADAS
+
+---
+
+os.getcwd()
+os.chdir()
+os.listdir()
+os.mkdir()
+os.remove()
+os.rename()
+os.path.exists()
+os.path.join()
+os.path.isfile()
+os.walk()
+
+15. EJEMPLO PRACTICO
+
+---
+
+Buscar todos los archivos .txt dentro de una carpeta:
+
+import os
+
+for root, dirs, files in os.walk("notas"):
+for archivo in files:
+if archivo.endswith(".txt"):
+print(os.path.join(root, archivo))
+
+16. ALTERNATIVA MODERNA (PATHLIB)
+
+---
+
+from pathlib import Path
+
+p = Path("archivo.txt")
+
+p.exists()
+p.is_file()
+p.suffix
