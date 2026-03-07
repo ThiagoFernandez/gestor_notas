@@ -2,7 +2,7 @@ import os
 import subprocess
 import shutil
 import json
-
+DATA_FILE = "../data.json"
 # auxiliar functions
 
 def check_dir():
@@ -76,8 +76,10 @@ def validate_tag(state, path):
         elif tag.strip() =="":
             print("Only blank space as text is invalid | Try again")
         else:
-            if state == 1:
+            if state == 0:
                 tag_list = recover_tags(path)
+                if tag_list == -1:
+                    return -1
                 if tag in tag_list:
                     print("The note alreeady has this tag | Try again")
                 else:
@@ -87,7 +89,7 @@ def validate_tag(state, path):
 
 def recover_tags(key):
     try:
-        arch = open("../data.json", "rt", encoding="UTF-8")
+        arch = open(DATA_FILE, "rt", encoding="UTF-8")
         dic = json.load(arch)
     except json.JSONDecodeError:
         print("Error json")
@@ -111,25 +113,18 @@ def recover_tags(key):
             print(f"This note has no tags")
             return -1
 
-def delete_key(key):
-    try:
-        arch = open("../data.json", "rt", encoding="UTF-8")
-        dic = json.load(arch)
-        arch.close()
-        arch = open("../data.json", "wt", encoding="UTF-8")
-    except json.JSONDecodeError:
-        print("Error json")
-        return -1
-    except OSError as o:
-        print(f" Error os: {o}")
-        return -1
-    except Exception as e:
-        print(f"Error e: {e}")
-        return -1
-    else:   
-        del dic[key]
-        json.dump(dic, arch, indent=4)
-        arch.close()
+def delete_key(path):
+
+    if not os.path.exists(DATA_FILE):
+        return
+
+    with open(DATA_FILE, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    data.pop(path, None)
+
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=4)
 
 def preview_note(path, note):
     try:
@@ -156,94 +151,114 @@ def preview_note(path, note):
 def add_note():
     while True:
         greeting_text("Adding note...")
+
         categories = [d for d in os.listdir() if os.path.isdir(d)]
+
         if len(categories) == 0:
-            rt=add_category()
+            rt = add_category()
             if rt == -1:
                 return
-            else:
-                categories = [d for d in os.listdir() if os.path.isdir(d)]
+            continue
+
         show_options(categories)
         result = validate_number(categories)
+
         if result == -1:
             return
-        notes = [n for n in os.listdir(categories[result-1]) if os.path.isfile(os.path.join(categories[result-1], n))]
-        rst = validate_string(notes, "Write the name of the note", 0)
-        if rst == -1:
-            return -1
-        else:
+
+        while True:
+            notes = [n for n in os.listdir(categories[result-1]) 
+                     if os.path.isfile(os.path.join(categories[result-1], n))]
+
+            rst = validate_string(notes, "Write the name of the note", 0)
+
+            if rst == -1:
+                break
+
+            path = os.path.join(categories[result-1], rst)
+
             try:
-                path = os.path.join(categories[result-1], rst)
-                arch = open(f"{path}", "wt", encoding="UTF-8")
-                tag_confirm = input(f"Do you want to add a tag?\nYES - NO: ")
+                with open(path, "wt", encoding="UTF-8"):
+                    pass
+
+                tag_confirm = input("Do you want to add a tag?\nYES - NO: ")
+
                 if tag_confirm.strip().upper() == "YES":
                     add_tag(1, path)
-            except OSError as o:
-                print(f"Error os: {o}")
-            except Exception as e:
-                print(f"Error e: {e}")
-            else:
-                arch.close()
-                print(f"Note added")
+
+                print("Note added")
                 open_file(path)
 
+            except OSError as o:
+                print(f"Error os: {o}")
+
 def delete_note():
+    greeting_text("Deleting note...")
+    categories = [d for d in os.listdir() if os.path.isdir(d)]
+
     while True:
-        greeting_text("Deleting note...")
-        cat_rt = validate_category()
-        if cat_rt == -1:
-            return -1
-        show_options(cat_rt)
-        result = validate_number(cat_rt)
+        show_options(categories)
+        result = validate_number(categories)
+
         if result == -1:
-            return
-        files = [n for n in os.listdir(cat_rt[result-1]) if os.path.isfile(os.path.join(cat_rt[result-1], n))]        
-        show_options(files)
-        match = validate_number(files)
-        if match == -1:
-            return
-        confirmation = input(f"Are you sure?\nYES - NO: ")
-        if confirmation.strip().upper() == "YES":
-            path = os.path.join(cat_rt[result-1], files[match-1])
-            os.remove(path)
-            delete_key(path)
-            print(f"The note has been removed")
+            return -1
+
+        notes = [n for n in os.listdir(categories[result-1])
+                 if os.path.isfile(os.path.join(categories[result-1], n))]
+
+        while True:
+            show_options(notes)
+            result2 = validate_number(notes)
+
+            if result2 == -1:
+                break
+
+            path = os.path.join(categories[result-1], notes[result2-1])
+
+            try:
+                os.remove(path)
+                delete_key(path)
+                print("Note deleted")
+            except OSError as o:
+                print(f"Error: {o}")
  
-def search_note(): 
+def search_note():
+    greeting_text("Searching note...")
+    categories = [d for d in os.listdir() if os.path.isdir(d)]
+
     while True:
-        greeting_text("Searching note...")
-        cat_rt = validate_category()
-        if cat_rt == -1:
-            return -1
-        show_options(cat_rt)
-        result = validate_number(cat_rt)
+        show_options(categories)
+        result = validate_number(categories)
+
         if result == -1:
-            return
-        files = [n for n in os.listdir(cat_rt[result-1]) if os.path.isfile(os.path.join(cat_rt[result-1], n))]
-        option = input("Write the note you are looking for('*' to go back to the main menu): ")
-        if option.strip() == "":
-            print("You have to write something, the programm will not search a blank space | Try again")
-        elif option.strip() =="*":
             return -1
-        else:
-            matches = []
-            for f in files:
-                if option.lower() in f.lower():
-                    matches.append(f)
-            if len(matches) == 0:
-                print("The programm did not find anything | Try again")
-            else:
-                while True:
-                    show_options(matches)
-                    match = validate_number(matches)
-                    if  match == -1:
-                        break
-                    path = os.path.join(cat_rt[result-1], matches[match-1])
-                    p_rt = preview_note(path, matches[match-1])
-                    if p_rt == -1:
-                        break
-                    open_file(path)
-                    print(f"{path} was opened")
+
+        category = categories[result-1]
+
+        while True:
+            files = [n for n in os.listdir(category)
+                     if os.path.isfile(os.path.join(category, n))]
+
+            text = input("Enter search term: ")
+
+            if text == "*":
+                break
+
+            result_list = [f for f in files if text in f]
+
+            if not result_list:
+                print("No results")
+                continue
+
+            while True:
+                show_options(result_list)
+                rst = validate_number(result_list)
+
+                if rst == -1:
+                    break
+
+                path = os.path.join(category, result_list[rst-1])
+                open_file(path)
 
 def search_content():
     while True:
@@ -300,39 +315,52 @@ def search_content():
             print(f"{path} was opened")
 
 def add_category():
+    greeting_text("Adding category...")
+
     while True:
-        greeting_text("Adding category...")
-        categories = [d for d in os.listdir() if os.path.isdir(d)]
-        rst = validate_string(categories, "Write the new category", 1)
-        if rst == -1:
+        name = input("Write category name: ")
+
+        if name == "*":
             return -1
-        else:
-            os.mkdir(rst)
+
+        if os.path.exists(name):
+            print("Category already exists")
+            continue
+
+        try:
+            os.mkdir(name)
             print("A new category has been created")
+            return
+        except OSError as o:
+            print(f"Error: {o}")
 
 def remove_category():
-    while True:
-        greeting_text("Removing category...")
-        cat_rt = validate_category()
-        if cat_rt == -1:
-            return -1
-        else:
-            show_options(cat_rt)
-            result=validate_number(cat_rt)
-            if result == -1:
-                return -1
-            else:
-                confirmation = input(f"You are going to delete all the notes inside this category - Are you sure?\nYES - NO: ")
-                if confirmation.strip().upper() == "YES":
-                    notes = [f for f in os.listdir(cat_rt[result-1])]
-                    for n in notes:
-                        path = os.path.join(cat_rt[result-1], n)
-                        delete_key(path)
+    greeting_text("Deleting category...")
 
-                    shutil.rmtree(cat_rt[result-1])
-                    for n in notes:
-                        path = os.path.join(cat_rt[result-1], n)
-                        delete_key(path)
+    cat_rt = [d for d in os.listdir() if os.path.isdir(d)]
+
+    while True:
+        show_options(cat_rt)
+        result = validate_number(cat_rt)
+
+        if result == -1:
+            return -1
+
+        category = cat_rt[result-1]
+
+        notes = [f for f in os.listdir(category)]
+
+        for n in notes:
+            path = os.path.join(category, n)
+            delete_key(path)
+
+        try:
+            shutil.rmtree(category)
+            print("Category deleted")
+        except OSError as o:
+            print(f"Error: {o}")
+
+        cat_rt = [d for d in os.listdir() if os.path.isdir(d)]
 
 def rename_category():
     while True:
@@ -435,116 +463,99 @@ def move_note():
                 print("The note has been moved")
                 return
 
-def add_tag(state, path):
-    if state == 0: # normal
-        while True:
-            greeting_text("Adding a tag...")
-            cat_rt = validate_category()
-            if cat_rt == -1:
+def add_tag(mode, path=None):
+    greeting_text("Adding tag...")
+
+    while True:
+
+        if mode == 0:
+            categories = [d for d in os.listdir() if os.path.isdir(d)]
+            show_options(categories)
+            result = validate_number(categories)
+
+            if result == -1:
                 return -1
-            else:
-                show_options(cat_rt)
-                rt = validate_number(cat_rt)
-                if rt == -1:
-                    return -1
-                else:
-                    notes = [f for f in os.listdir(cat_rt[rt-1])]
-                    show_options(notes)
-                    n_rt = validate_number(notes)
-                    if n_rt == -1:
-                        return -1
-                    else:
-                        path = os.path.join((cat_rt[rt-1]), notes[n_rt-1])
-                        t_rt = validate_tag(1, path)
-                        if t_rt == -1:
-                            return -1
-                        else:
-                            try:
-                                arch = open("../data.json", "rt", encoding="UTF-8")
-                                dic = json.load(arch)
-                                arch.close()
-                                arch = open("../data.json", "wt", encoding="UTF-8")
-                            except json.JSONDecodeError:
-                                print("Error json")
-                            except OSError as o:
-                                print(f" Error os: {o}")
-                            except Exception as e:
-                                print(f"Error e: {e}")
-                            else:
-                                if path not in dic:
-                                    dic[path] = [t_rt]
-                                else:
-                                    dic[path].append(t_rt)
-                                json.dump(dic, arch, indent=4)
-                                arch.close()
-    else: # cuando es una clave nueva
-        t_rt = validate_tag(0, path)
-        if t_rt == -1:
+
+            notes = [n for n in os.listdir(categories[result-1])
+                     if os.path.isfile(os.path.join(categories[result-1], n))]
+
+            show_options(notes)
+            result2 = validate_number(notes)
+
+            if result2 == -1:
+                continue
+
+            path = os.path.join(categories[result-1], notes[result2-1])
+
+        tag = validate_tag(mode, path)
+
+        if tag == -1:
             return -1
-        else:
-            try:
-                arch = open("../data.json", "rt", encoding="UTF-8")
-                dic = json.load(arch)
-                arch.close()
-                arch = open("../data.json", "wt", encoding="UTF-8")
-            except json.JSONDecodeError:
-                print("Error json")
-            except OSError as o:
-                print(f" Error os: {o}")
-            except Exception as e:
-                print(f"Error e: {e}")
-            else:
-                dic[path] = [t_rt]    
-                json.dump(dic, arch, indent=4)
-                arch.close()  
+
+        data = {}
+
+        if os.path.exists(DATA_FILE):
+            with open(DATA_FILE, "r", encoding="utf-8") as f:
+                data = json.load(f)
+
+        data.setdefault(path, []).append(tag)
+
+        with open(DATA_FILE, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=4)
+
+        print("Tag added")
+        return
 
 def remove_tag():
+    greeting_text("Removing tag...")
+
     while True:
-        greeting_text("Deleting a tag...")      
-        cat_rt = validate_category()
-        if cat_rt == -1:
+        categories = [d for d in os.listdir() if os.path.isdir(d)]
+
+        show_options(categories)
+        result = validate_number(categories)
+
+        if result == -1:
             return -1
-        else:
-            show_options(cat_rt)
-            rt = validate_number(cat_rt)
-            if rt == -1:
-                return -1
-            else:
-                notes = [f for f in os.listdir(cat_rt[rt-1])]
-                show_options(notes)
-                n_rt = validate_number(notes)
-                if n_rt == -1:
-                    return -1
-                else:
-                    key = os.path.join(cat_rt[rt-1], notes[n_rt-1])
-                    tag_list = recover_tags(key)
-                    if tag_list == -1:
-                        return -1
-                    else:
-                        show_options(tag_list)
-                        tl_rt = validate_number(tag_list)
-                        if tl_rt == -1:
-                            return -1
-                        else:
-                            try:
-                                arch = open("../data.json", "rt", encoding="UTF-8")
-                                dic = json.load(arch)
-                                arch.close()
-                                arch = open("../data.json", "wt", encoding="UTF-8")
-                            except json.JSONDecodeError:
-                                print("Error json")
-                            except OSError as o:
-                                print(f" Error os: {o}")
-                            except Exception as e:
-                                print(f"Error e: {e}")
-                            else:
-                                dic[key].remove(tag_list[tl_rt-1])
-                                json.dump(dic, arch, indent=4)
-                                arch.close()
+
+        notes = [n for n in os.listdir(categories[result-1])
+                 if os.path.isfile(os.path.join(categories[result-1], n))]
+
+        show_options(notes)
+        result2 = validate_number(notes)
+
+        if result2 == -1:
+            continue
+
+        path = os.path.join(categories[result-1], notes[result2-1])
+
+        tags = recover_tags(path)
+
+        if tags == -1 or not tags:
+            print("No tags")
+            continue
+
+        show_options(tags)
+        rst = validate_number(tags)
+
+        if rst == -1:
+            continue
+
+        data = {}
+
+        with open(DATA_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        data[path].remove(tags[rst-1])
+
+        with open(DATA_FILE, "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=4)
+
+        print("Tag removed")
 
 def search_tag():
     try:
-        arch = open("../data.json", "rt", encoding="UTF-8")
+        arch = open(DATA_FILE, "rt", encoding="UTF-8")
         dic = json.load(arch)
     except json.JSONDecodeError:
         print("Error json")
