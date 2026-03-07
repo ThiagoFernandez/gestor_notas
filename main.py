@@ -3,6 +3,8 @@ import subprocess
 import shutil
 import json
 
+# auxiliar functions
+
 def check_dir():
     if os.path.exists("notes"):
         if os.path.isdir("notes"):
@@ -46,7 +48,6 @@ def validate_number(options):
 
 def validate_string(options, text, type):
     while True:
-        state = 0
         string = input(f"{text}('*' to go back to the menu): ")
         if string.strip() == "":
             print("Only blank space as text is invalid | Try again")
@@ -80,7 +81,7 @@ def validate_tag(state, path):
                 if tag in tag_list:
                     print("The note alreeady has this tag | Try again")
                 else:
-                    remove_tag.lower()
+                    return tag.lower()
             else:
                 return tag.lower()
 
@@ -110,12 +111,54 @@ def recover_tags(key):
             print(f"This note has no tags")
             return -1
 
+def delete_key(key):
+    try:
+        arch = open("../data.json", "rt", encoding="UTF-8")
+        dic = json.load(arch)
+        arch.close()
+        arch = open("../data.json", "wt", encoding="UTF-8")
+    except json.JSONDecodeError:
+        print("Error json")
+        return -1
+    except OSError as o:
+        print(f" Error os: {o}")
+        return -1
+    except Exception as e:
+        print(f"Error e: {e}")
+        return -1
+    else:   
+        del dic[key]
+        json.dump(dic, arch, indent=4)
+        arch.close()
+
+def preview_note(path, note):
+    try:
+        arch = open(path, "rt", encoding="UTF-8")
+    except OSError as o:
+        print(f"Error os: {o}")
+    except Exception as e:
+        print(f"Error e: {e}")
+    else:
+        preview = [arch.readline() for _ in range(5)]
+        arch.close()
+        print(f"{'':|^60}")
+        print(f"Preview of {note}")
+        for p in preview:
+            print(p)
+        print(f"{'':|^60}")
+        confirmation = input(f"Is this the note that you are looking for?\nYES - NO: ")
+        if confirmation.strip().upper() != "YES":
+            return -1
+        
+        
+# main functions
+
 def add_note():
     while True:
         greeting_text("Adding note...")
         categories = [d for d in os.listdir() if os.path.isdir(d)]
         if len(categories) == 0:
-            rt=add_categorie()
+            rt=add_category()
             if rt == -1:
                 return
             else:
@@ -163,6 +206,7 @@ def delete_note():
         if confirmation.strip().upper() == "YES":
             path = os.path.join(cat_rt[result-1], files[match-1])
             os.remove(path)
+            delete_key(path)
             print(f"The note has been removed")
  
 def search_note(): 
@@ -195,8 +239,65 @@ def search_note():
                     if  match == -1:
                         break
                     path = os.path.join(cat_rt[result-1], matches[match-1])
+                    p_rt = preview_note(path, matches[match-1])
+                    if p_rt == -1:
+                        break
                     open_file(path)
                     print(f"{path} was opened")
+
+def search_content():
+    while True:
+        greeting_text("Searching by content...")
+
+        word = input("Write the word you want to search('*' to go back): ")
+
+        if word.strip() == "":
+            print("You must write something | Try again")
+            continue
+        elif word.strip() == "*":
+            return -1
+
+        word = word.lower()
+        matches = []
+
+        categories = [d for d in os.listdir() if os.path.isdir(d)]
+
+        for cat in categories:
+            files = [f for f in os.listdir(cat) if os.path.isfile(os.path.join(cat, f))]
+
+            for file in files:
+                path = os.path.join(cat, file)
+
+                try:
+                    with open(path, "rt", encoding="UTF-8") as arch:
+                        for line in arch:
+                            if word in line.lower():
+                                matches.append(path)
+                                break
+                except OSError as o:
+                    print(f"Error os: {o}")
+
+        if len(matches) == 0:
+            print("No matches found | Try again")
+            continue
+
+        while True:
+            show_options(matches)
+            match = validate_number(matches)
+
+            if match == -1:
+                return -1
+
+            path = matches[match-1]
+            note = os.path.basename(path)
+
+            p_rt = preview_note(path, note)
+
+            if p_rt == -1:
+                break
+
+            open_file(path)
+            print(f"{path} was opened")
 
 def add_category():
     while True:
@@ -223,7 +324,15 @@ def remove_category():
             else:
                 confirmation = input(f"You are going to delete all the notes inside this category - Are you sure?\nYES - NO: ")
                 if confirmation.strip().upper() == "YES":
+                    notes = [f for f in os.listdir(cat_rt[result-1])]
+                    for n in notes:
+                        path = os.path.join(cat_rt[result-1], n)
+                        delete_key(path)
+
                     shutil.rmtree(cat_rt[result-1])
+                    for n in notes:
+                        path = os.path.join(cat_rt[result-1], n)
+                        delete_key(path)
 
 def rename_category():
     while True:
@@ -472,6 +581,11 @@ def search_tag():
                 if nt_rt == -1:
                     return -1
                 else:
+                    idx = notes_with_tag[nt_rt-1].index("/")
+                    note = notes_with_tag[nt_rt-1][idx+1:]
+                    p_rt = preview_note(notes_with_tag[nt_rt-1], note)
+                    if p_rt == -1:
+                        return -1
                     open_file(notes_with_tag[nt_rt-1])
 
 def show_menu(menu, lista_opt, lista_funciones):
@@ -493,8 +607,8 @@ def show_main_menu():
         else:
             match result:
                 case 1:
-                    lista_opt_n = ["Search Notes", "Add a note", "Delete a note", "Move a note", "Rename a note"]
-                    lista_fun_n = [search_note, add_note, delete_note, move_note, rename_note]
+                    lista_opt_n = ["Search Notes", "Search By Content", "Add a note", "Delete a note", "Move a note", "Rename a note"]
+                    lista_fun_n = [search_note, search_content, add_note, delete_note, move_note, rename_note]
                     menu_f = "notes menu"
                     show_menu(menu_f, lista_opt_n, lista_fun_n)
                 case 2:
