@@ -239,7 +239,7 @@ def search_note():
             files = [n for n in os.listdir(category)
                      if os.path.isfile(os.path.join(category, n))]
 
-            text = input("Enter search term: ")
+            text = input("Enter search term('*' to go back): ")
 
             if text == "*":
                 break
@@ -463,7 +463,7 @@ def move_note():
                 print("The note has been moved")
                 return
 
-def add_tag(mode, path=None):
+def add_tag(mode=0, path=None):
     greeting_text("Adding tag...")
 
     while True:

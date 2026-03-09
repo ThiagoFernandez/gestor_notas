@@ -1,0 +1,422 @@
+LINUX COMMAND CHEAT SHEET
+=========================
+
+--------------------------------------------------
+COMANDOS BASICOS
+--------------------------------------------------
+
+pwd
+mostrar directorio actual
+
+ls
+listar archivos
+
+ls -l
+listar en formato detallado
+
+ls -a
+mostrar archivos ocultos
+
+ls -lh
+mostrar tamaño legible
+
+clear
+limpiar terminal
+
+history
+mostrar historial de comandos
+
+
+--------------------------------------------------
+NAVEGACION
+--------------------------------------------------
+
+cd carpeta
+entrar a carpeta
+
+cd ..
+subir un nivel
+
+cd ~
+ir al home
+
+cd /
+ir a la raíz
+
+cd -
+volver al directorio anterior
+
+
+--------------------------------------------------
+MANEJO DE ARCHIVOS
+--------------------------------------------------
+
+touch archivo.txt
+crear archivo
+
+cp origen destino
+copiar archivo
+
+cp archivo carpeta/
+copiar a carpeta
+
+mv origen destino
+mover o renombrar
+
+rm archivo
+borrar archivo
+
+rm -r carpeta
+borrar carpeta
+
+rm -rf carpeta
+borrar carpeta forzado
+
+
+--------------------------------------------------
+CREAR DIRECTORIOS
+--------------------------------------------------
+
+mkdir carpeta
+
+mkdir -p carpeta/subcarpeta
+
+
+--------------------------------------------------
+VER CONTENIDO DE ARCHIVOS
+--------------------------------------------------
+
+cat archivo.txt
+mostrar contenido
+
+less archivo.txt
+leer archivo navegable
+
+head archivo.txt
+primeras 10 líneas
+
+head -n 20 archivo.txt
+
+tail archivo.txt
+últimas líneas
+
+tail -f log.txt
+ver archivo en tiempo real
+
+
+--------------------------------------------------
+BUSCAR ARCHIVOS
+--------------------------------------------------
+
+find . -name archivo.txt
+
+find / -name archivo.txt
+
+locate archivo.txt
+
+
+--------------------------------------------------
+BUSCAR TEXTO
+--------------------------------------------------
+
+grep "texto" archivo.txt
+
+grep -i "texto" archivo.txt
+
+grep -r "texto" carpeta/
+
+
+--------------------------------------------------
+PERMISOS
+--------------------------------------------------
+
+chmod 755 archivo
+
+chmod +x script.sh
+
+chown usuario archivo
+
+chown usuario:grupo archivo
+
+
+--------------------------------------------------
+PROCESOS
+--------------------------------------------------
+
+ps
+
+ps aux
+
+top
+
+htop
+
+kill PID
+
+kill -9 PID
+
+
+--------------------------------------------------
+USUARIOS
+--------------------------------------------------
+
+whoami
+
+id
+
+sudo comando
+
+su usuario
+
+
+--------------------------------------------------
+RED
+--------------------------------------------------
+
+ping google.com
+
+ip a
+
+ip link
+
+ip route
+
+curl https://google.com
+
+wget https://archivo
+
+
+--------------------------------------------------
+COMPRESION
+--------------------------------------------------
+
+tar -czvf archivo.tar.gz carpeta
+
+tar -xzvf archivo.tar.gz
+
+zip archivo.zip archivo.txt
+
+unzip archivo.zip
+
+
+--------------------------------------------------
+INFORMACION DEL SISTEMA
+--------------------------------------------------
+
+uname -a
+
+neofetch
+
+df -h
+espacio en disco
+
+du -sh carpeta
+
+free -h
+memoria RAM
+
+
+--------------------------------------------------
+DISCOS
+--------------------------------------------------
+
+lsblk
+
+mount
+
+umount
+
+fdisk -l
+
+
+--------------------------------------------------
+ARCH LINUX / ENDEAVOUROS
+--------------------------------------------------
+
+PACMAN (GESTOR DE PAQUETES)
+
+actualizar sistema
+
+sudo pacman -Syu
+
+
+instalar paquete
+
+sudo pacman -S paquete
+
+
+eliminar paquete
+
+sudo pacman -R paquete
+
+
+eliminar paquete y dependencias
+
+sudo pacman -Rns paquete
+
+
+buscar paquete
+
+pacman -Ss paquete
+
+
+ver paquetes instalados
+
+pacman -Q
+
+
+ver info de paquete
+
+pacman -Qi paquete
+
+
+limpiar cache
+
+sudo pacman -Sc
+
+
+--------------------------------------------------
+AUR (yay)
+--------------------------------------------------
+
+instalar paquete AUR
+
+yay -S paquete
+
+
+actualizar todo
+
+yay -Syu
+
+
+buscar paquete
+
+yay -Ss paquete
+
+
+eliminar paquete
+
+yay -Rns paquete
+
+
+--------------------------------------------------
+SERVICIOS (systemd)
+--------------------------------------------------
+
+ver servicios activos
+
+systemctl list-units
+
+
+iniciar servicio
+
+sudo systemctl start servicio
+
+
+detener servicio
+
+sudo systemctl stop servicio
+
+
+habilitar servicio al inicio
+
+sudo systemctl enable servicio
+
+
+deshabilitar servicio
+
+sudo systemctl disable servicio
+
+
+ver estado de servicio
+
+systemctl status servicio
+
+
+--------------------------------------------------
+LOGS
+--------------------------------------------------
+
+journalctl
+
+journalctl -xe
+
+journalctl -u servicio
+
+
+--------------------------------------------------
+RED EN ARCH
+--------------------------------------------------
+
+ver red
+
+ip a
+
+
+reiniciar network manager
+
+sudo systemctl restart NetworkManager
+
+
+--------------------------------------------------
+ARCHIVOS IMPORTANTES EN ARCH
+--------------------------------------------------
+
+/etc/pacman.conf
+
+/etc/fstab
+
+/var/log
+
+/home
+
+/usr/bin
+
+
+--------------------------------------------------
+COMANDOS MUY USADOS EN ENDEAVOUROS
+--------------------------------------------------
+
+eos-update
+actualizar sistema EndeavourOS
+
+reflector
+actualizar mirrors
+
+sudo reflector --latest 20 --sort rate --save /etc/pacman.d/mirrorlist
+
+
+--------------------------------------------------
+COMANDOS UTILES
+--------------------------------------------------
+
+which programa
+ruta del ejecutable
+
+whereis programa
+
+man comando
+manual
+
+comando --help
+ayuda rápida
+
+
+--------------------------------------------------
+ATAJOS TERMINAL
+--------------------------------------------------
+
+CTRL + C
+cancelar proceso
+
+CTRL + Z
+pausar proceso
+
+CTRL + D
+cerrar terminal
+
+CTRL + L
+limpiar pantalla
+
+TAB
+autocompletar
