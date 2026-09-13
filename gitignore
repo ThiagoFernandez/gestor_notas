@@ -1,0 +1,29 @@
+# Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Entornos virtuales
+.venv/
+venv/
+env/
+
+# Editores e IDEs
+.vscode/
+.idea/
+*.swp
+
+# Archivos del sistema
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Datos del usuario: el programa los crea solo en la primera corrida.
+# Son tus notas y tus etiquetas, no parte del proyecto.
+data.json
+notes/
+
+# Si querés dejar una categoría de ejemplo en el repo, comentá la línea
+# de arriba y usá estas dos:
+# notes/*
+# !notes/cheat sheets/
