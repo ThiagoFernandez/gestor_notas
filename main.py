@@ -349,10 +349,10 @@ def remove_category():
 
         if notes:
             print("this category has notes inside - Do you want to delete it anyways?")
-            opts = ["yes"]
+            opts = ["yes", "no"]
             show_options(opts)
             rt = validate_number(opts)
-            if rt != "yes":
+            if rt == -1 or opts[rt-1] == "no":
                 return
 
         for n in notes:
@@ -377,9 +377,10 @@ def update_key(old, new):
     updated_data = {}
 
     for key, value in data.items():
-        if key.startswith(old + os.sep):
-            new_key = new + key[len(old):]
-            updated_data[new_key] = value
+        if key == old:
+            updated_data[new] = value
+        elif key.startswith(old + os.sep):
+            updated_data[new + key[len(old):]] = value
         else:
             updated_data[key] = value
 
