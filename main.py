@@ -9,7 +9,7 @@ def check_dir():
     if os.path.exists("notes"):
         if os.path.isdir("notes"):
             return 1
-    
+
     return -1
 
 def check_json():
@@ -21,11 +21,8 @@ def check_json():
 def open_file(path):
     if os.name == "nt":
         os.startfile(path)
-    else: 
-        if path.endswith(".pdf"):
-            subprocess.Popen(["xdg-open", path])
-        else:
-            subprocess.Popen(["kwrite", path])
+    else:
+        subprocess.Popen(["xdg-open", path]) # saco kwrite porque solo existe en KDE asi q uso solo xdg
 
 def show_options(options):
     for idx, value in enumerate(options):
@@ -55,7 +52,7 @@ def validate_string(options, text, type):
             return -1
         elif string in options:
             print("There is one with the same name | Try again")
-        elif not string.endswith(".txt") and type == 0: 
+        elif not string.endswith(".txt") and type == 0:
             print(f"The name needs to end with a '.txt' | Try again")
         else:
             return string
@@ -144,8 +141,8 @@ def preview_note(path, note):
         confirmation = input(f"Is this the note that you are looking for?\nYES - NO: ")
         if confirmation.strip().upper() != "YES":
             return -1
-        
-        
+
+
 # main functions
 
 def add_note():
@@ -167,7 +164,7 @@ def add_note():
             return
 
         while True:
-            notes = [n for n in os.listdir(categories[result-1]) 
+            notes = [n for n in os.listdir(categories[result-1])
                      if os.path.isfile(os.path.join(categories[result-1], n))]
 
             rst = validate_string(notes, "Write the name of the note", 0)
@@ -221,7 +218,7 @@ def delete_note():
                 print("Note deleted")
             except OSError as o:
                 print(f"Error: {o}")
- 
+
 def search_note():
     greeting_text("Searching note...")
     categories = [d for d in os.listdir() if os.path.isdir(d)]
@@ -350,6 +347,14 @@ def remove_category():
 
         notes = [f for f in os.listdir(category)]
 
+        if notes:
+            print("this category has notes inside - Do you want to delete it anyways?")
+            opts = ["yes"]
+            show_options(opts)
+            rt = validate_number(opts)
+            if rt != "yes":
+                return
+
         for n in notes:
             path = os.path.join(category, n)
             delete_key(path)
@@ -361,6 +366,26 @@ def remove_category():
             print(f"Error: {o}")
 
         cat_rt = [d for d in os.listdir() if os.path.isdir(d)]
+
+def update_key(old, new):
+    if not os.path.exists(DATA_FILE):
+        return
+
+    with open(DATA_FILE, "r", encoding="utf-8") as f:
+        data = json.load(f)
+
+    updated_data = {}
+
+    for key, value in data.items():
+        if key.startswith(old + os.sep):
+            new_key = new + key[len(old):]
+            updated_data[new_key] = value
+        else:
+            updated_data[key] = value
+
+    with open(DATA_FILE, "w", encoding="utf-8") as f:
+        json.dump(updated_data, f, indent=4)
+
 
 def rename_category():
     while True:
@@ -379,6 +404,7 @@ def rename_category():
                     return -1
                 else:
                     os.rename(cat_rt[result-1], rst)
+                    update_key(cat_rt[result-1], rst)
                     print("The category has been renamed")
 
 def rename_note():
@@ -414,6 +440,7 @@ def rename_note():
         old_path = os.path.join(cat_rt[result-1], notes[rt-1])
         new_path = os.path.join(cat_rt[result-1], rst)
 
+        update_key(old_path, new_path)
         os.rename(old_path, new_path)
 
         print("The note has been renamed")
