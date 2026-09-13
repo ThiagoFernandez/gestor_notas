@@ -484,7 +484,9 @@ def move_note():
             if nrt == result:
                 print("The note is already in this category | Try again")
             else:
+
                 new_path = os.path.join(cat_rt[nrt-1], notes[rt-1])
+                update_key(old_path, new_path)
                 shutil.move(old_path, new_path)
 
                 print("The note has been moved")
@@ -619,8 +621,7 @@ def search_tag():
                 if nt_rt == -1:
                     return -1
                 else:
-                    idx = notes_with_tag[nt_rt-1].index("/")
-                    note = notes_with_tag[nt_rt-1][idx+1:]
+                    note = os.path.basename(notes_with_tag[nt_rt-1])
                     p_rt = preview_note(notes_with_tag[nt_rt-1], note)
                     if p_rt == -1:
                         return -1
