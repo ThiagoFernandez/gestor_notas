@@ -212,6 +212,13 @@ def delete_note():
 
             path = os.path.join(categories[result-1], notes[result2-1])
 
+            print("confirm to delete")
+            opts = ["yes", "no"]
+            show_options(opts)
+            rt = validate_number(opts)
+            if rt == -1 or opts[rt-1] == "no":
+                return
+
             try:
                 os.remove(path)
                 delete_key(path)
