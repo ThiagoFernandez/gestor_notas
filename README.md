@@ -90,6 +90,5 @@ gestor_notas/
 - Las notas tienen que terminar en `.txt`.
 - El índice de etiquetas usa el separador de rutas del sistema operativo, así que un
   `data.json` armado en Windows no coincide con las rutas en Linux.
-- Borrar una nota no pide confirmación.
 - Todo está en un solo archivo. El próximo paso es separar la lógica de los menús para
   poder montarle una interfaz gráfica: árbol de categorías a la izquierda, editor a la derecha.
